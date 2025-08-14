@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+const letters = "abcdefghijklmnopqrstuvwxyz";
+const numbers = "0123456789";
+const symbols = "!@#$%^&*()-_=+[]{}|;:'\\,.<>?/`~";
 
 function App() {
 
@@ -15,12 +18,28 @@ function App() {
     console.log('Ho inviato i dati');
 
     if (!name || !username || !password || !years || description.trim() === '') {
-      console.error('Tutti i campi devono essere compilati!')
-    } else if (years < 0) {
+      console.error('Tutti i campi devono essere compilati!');
+    }
+
+    if ((!letters.includes(username) && symbols.includes(username)) || username.length !== 6) {
+      console.error('Username non valido!');
+    }
+
+    if (password.trim().length <= 8 && !(password.split('').some((char: string) => letters.includes(char)) && !(password.split('').some(char => numbers.includes(char))) && !(password.split('').some(char => symbols.includes(char))))) {
+      console.error('Password non valida!');
+    }
+
+    if (years < 0) {
       console.error('Non puoi inserire un numero minore di 0.');
-    } else if (!select) {
+    }
+
+    if (!select) {
       console.error('Scegliere una specializzazione!');
       return;
+    }
+
+    if (description.trim().length < 100 || description.trim().length > 1000) {
+      console.error('La descrizione deve contenere tra i 100 e i 1000 caratteri.');
     }
 
     console.log({
@@ -88,7 +107,10 @@ function App() {
 
         <label>
           Inserisci una breve descrizione
-          <textarea value={description} onChange={e => setDescription(e.target.value)}></textarea>
+
+          Hai scritto: {description.trim().length}/1000 caratteri
+          <textarea value={description} onChange={e => setDescription(e.target.value)}>
+          </textarea>
         </label>
 
         <button type="submit">Invia il form</button>
