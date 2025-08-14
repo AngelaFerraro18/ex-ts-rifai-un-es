@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const letters = "abcdefghijklmnopqrstuvwxyz";
 const numbers = "0123456789";
@@ -6,18 +6,25 @@ const symbols = "!@#$%^&*()-_=+[]{}|;:'\\,.<>?/`~";
 
 function App() {
 
-  const [name, setName] = useState('');
+  // campi controllati con useState 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [select, setSelect] = useState('');
-  const [years, setYears] = useState(0);
   const [description, setDescription] = useState('');
+
+  //campi non controllati con useRef
+  const nameRef = useRef<HTMLInputElement>(null);
+  const selectRef = useRef<HTMLSelectElement>(null);
+  const yearRef = useRef<HTMLInputElement>(null);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.log('Ho inviato i dati');
 
-    if (!name || !username || !password || !years || description.trim() === '') {
+    const nameValue = nameRef.current?.value;
+    const selectValue = selectRef.current?.value;
+    const yearValue = Number(yearRef.current?.value);
+
+    if (!nameValue || !username || !password || !yearValue || description.trim() === '') {
       console.error('Tutti i campi devono essere compilati!');
     }
 
@@ -29,11 +36,11 @@ function App() {
       console.error('Password non valida!');
     }
 
-    if (years < 0) {
+    if (yearValue < 0) {
       console.error('Non puoi inserire un numero minore di 0.');
     }
 
-    if (!select) {
+    if (!selectValue) {
       console.error('Scegliere una specializzazione!');
       return;
     }
@@ -43,20 +50,21 @@ function App() {
     }
 
     console.log({
-      name,
+      nameValue,
       username,
       password,
-      select,
-      years,
+      selectValue,
+      yearValue,
       description
     });
 
     // reset form 
-    setName('');
+
+    if (nameRef.current) nameRef.current.value = '';
+    if (selectRef.current) selectRef.current.value = '';
+    if (yearRef.current) yearRef.current.value = '';
     setUsername('');
     setPassword('');
-    setSelect('');
-    setYears(0);
     setDescription('');
   }
 
@@ -66,8 +74,7 @@ function App() {
         <label>
           Inserisci il nome
           <input type="text"
-            value={name}
-            onChange={e => setName(e.target.value)}
+            ref={nameRef}
           />
         </label>
 
@@ -89,7 +96,7 @@ function App() {
 
         <label>
           Scegli specializzazione
-          <select value={select} onChange={e => setSelect(e.target.value)}>
+          <select ref={selectRef}>
             <option value="">Specializzazione:</option>
             <option value="full-stack">Full Stack</option>
             <option value="frontend">Frontend</option>
@@ -100,8 +107,7 @@ function App() {
         <label>
           Anni di esperienza
           <input type="number"
-            value={years}
-            onChange={e => setYears(Number(e.target.value))}
+            ref={yearRef}
           />
         </label>
 
